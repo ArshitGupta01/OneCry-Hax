@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pip's Midnight Folio — Cozy 2.5D Nursery, Lullaby Lab & Pop-Up Storybook</title>
+  <meta
+    name="description"
+    content="An enchanting 2.5D bedtime pop-up book and nocturnal nursery. Care for Pip, explore the Lullaby Attic, fly across midnight rooftops, and leave your dream wish."
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Multi-Plane Atmospheric Night Sky -->
+  <div class="sky-canvas" aria-hidden="true">
+    <div class="sky-stars"></div>
+    <div class="sky-nebula"></div>
+  </div>
+
+  <!-- Ethereal Stardust Cursor Canvas -->
+  <canvas id="sparkle-canvas" class="sparkle-canvas" aria-hidden="true"></canvas>
+
+  <!-- Viewport-Locked 100dvh Master Application Frame -->
+  <div class="app-container">
+
+    <!-- Slim Diegetic Top Header -->
+    <header class="top-header">
+      <div class="brand-badge">
+        <span class="brand-icon" aria-hidden="true">🌙</span>
+        <div>
+          <h1 class="brand-title">Pip's Midnight Folio</h1>
+          <div class="brand-sub header-text-desktop">Chief Architect of Slumber</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="sound-toggle" class="pill-btn active" type="button" aria-label="Toggle Sound">
+          <span id="sound-icon">🔔</span>
+          <span id="sound-label" class="header-text-desktop">sound on</span>
+          <span class="sound-eq" aria-hidden="true">
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+          </span>
+        </button>
+        <button id="lantern-toggle" class="pill-btn" type="button" aria-label="Toggle Night Mode">
+          <span id="dimmer-icon">🕯️</span>
+          <span id="dimmer-label" class="header-text-desktop">night mode</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Interactive Stage (Fits cleanly between Top Header & Bottom Dock) -->
+    <main class="main-stage">
+
+      <!-- ===================================================================
+           TAB 1: NURSERY (MULTI-PLANE PARALLAX + MASCOT STATE MACHINE)
+           =================================================================== -->
+      <section id="view-nursery" class="tab-view active" aria-label="Pip's Nursery">
+        <div class="stage-card">
+          <!-- Left Visual Diorama Pane -->
+          <div id="nursery-scene" class="scene-pane parallax-host">
+            <!-- Optional Spline 3D Runtime Canvas (Auto-activates if data-spline-url is provided) -->
+            <canvas id="spline-canvas" class="spline-canvas" data-spline-url=""></canvas>
+
+            <!-- Plane 0: Deep Starry Aura & Moon Halo -->
+            <div class="parallax-layer layer-bg">
+              <div id="nursery-aura" class="nursery-aura"></div>
+              <div class="floating-constellation">✦ &nbsp; ☽ &nbsp; ★ &nbsp; ✧</div>
+            </div>
+
+            <!-- Speech Bubble with Typewriter Effect -->
+            <div id="pip-dialogue" class="pip-dialogue" role="status" aria-live="polite">
+              "Ooh, shiny! A nighttime visitor! Welcome to Pip's nursery."
+            </div>
+
+            <!-- Plane 1: Midground Mascot State Sprite -->
+            <div class="nursery-avatar-wrap parallax-layer layer-mid">
+              <span id="pip-mood-badge" class="mood-floating-badge">✨ Curious Watch</span>
+              <img
+                id="pip-avatar-img"
+                class="pip-sprite"
+                src="assets/pip_avatar_cloud.png"
+                alt="Pip the cherub floating peacefully on a cloud"
+              />
+              <div id="nursery-fx" class="flying-fx-container"></div>
+            </div>
+
+            <!-- Plane 2: Foreground Cursor Spotlight -->
+            <div class="cursor-spotlight" aria-hidden="true"></div>
+          </div>
+
+          <!-- Right Soft-UI Action Card -->
+          <div class="action-pane">
+            <div>
+              <div class="pane-eyebrow">Mascot State Machine</div>
+              <h2 class="pane-heading">Care for Little Pip</h2>
+              <p class="pane-subtext">
+                Switch Pip's nocturnal mood, feed vanilla star-cookies, or pat Pip before rooftop flight.
+              </p>
+
+              <div class="mood-row" role="group" aria-label="Pip Mood Selector">
+                <button class="mood-chip active" type="button" data-mood="curious">curious</button>
+                <button class="mood-chip" type="button" data-mood="cozy">cozy</button>
+                <button class="mood-chip" type="button" data-mood="proud">proud</button>
+                <button class="mood-chip" type="button" data-mood="giggling">giggling</button>
+                <button class="mood-chip" type="button" data-mood="snoozing">snoozing</button>
+              </div>
+
+              <div class="action-stack">
+                <button id="btn-feed-cookie" class="cozy-btn btn-cookie" type="button">
+                  <span>🍪</span>
+                  <span>feed a star-cookie</span>
+                </button>
+                <button id="btn-pet-pip" class="cozy-btn btn-pat" type="button">
+                  <span>💖</span>
+                  <span>cuddle &amp; pat Pip</span>
+                </button>
+                <button id="btn-to-attic" class="cozy-btn btn-attic-jump" type="button">
+                  <span>🎨</span>
+                  <span>explore Pip's Attic Workshop</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="pane-footer-stats">
+              <span>Star-Cookies: <b id="cookies-count">3</b></span>
+              <span>Status: <b id="nursery-status">Guarding Dreams</b></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 2: ATTIC & LULLABY WORKSHOP (2.5D SPRING-LERP DIORAMA)
+           =================================================================== -->
+      <section id="view-attic" class="tab-view" aria-label="Attic Lullaby Workshop">
+        <div class="stage-card">
+          <!-- Left 2.5D Tilt Diorama -->
+          <div class="scene-pane attic-scene-pane">
+            <div class="attic-stage-wrap">
+              <div id="attic-room" class="attic-room">
+                <!-- Plane 0: Hand-Painted Attic Backdrop -->
+                <img
+                  src="assets/attic_room.jpg"
+                  alt="Cozy timber attic nursery with moonlit window"
+                  class="attic-bg-img"
+                />
+                <div id="attic-lantern-bloom" class="attic-lantern-bloom"></div>
+
+                <!-- Starry Bunting Garland -->
+                <div class="attic-garland">✦ &nbsp; ★ &nbsp; ✧ &nbsp; ☽ &nbsp; ✦ &nbsp; ★ &nbsp; ✧</div>
+
+                <!-- Relic 1: Golden Music Box with Winding Key -->
+                <div
+                  id="obj-musicbox"
+                  class="attic-object attic-musicbox active-focus"
+                  role="button"
+                  tabindex="0"
+                  title="The Golden Music Box"
+                >
+                  <img src="assets/pip_lullaby_box.png" alt="Pastel Unicorn Music Box" />
+                  <span id="musicbox-key" class="clockwork-key-badge" aria-hidden="true">⚙️</span>
+                  <span class="relic-label-pill">1. Music Box</span>
+                </div>
+
+                <!-- Relic 2: Brass Dream Lantern -->
+                <div
+                  id="obj-lantern"
+                  class="attic-object attic-lantern"
+                  role="button"
+                  tabindex="0"
+                  title="The Brass Dream Lantern"
+                >
+                  <img src="assets/pip_dream_lantern.png" alt="Brass Dream Lantern" />
+                  <span class="relic-label-pill">2. Dream Lantern</span>
+                </div>
+
+                <!-- Relic 3: Cloud Cradle Bed -->
+                <div
+                  id="obj-bed"
+                  class="attic-object attic-bed"
+                  role="button"
+                  tabindex="0"
+                  title="Pip's Cloud Cradle"
+                >
+                  <img id="attic-bed-img" src="assets/pip_avatar_cloud.png" alt="Pip resting on cloud cradle" />
+                  <span class="relic-label-pill">3. Cloud Cradle</span>
+                </div>
+
+                <!-- Relic 4: Playable Pentatonic Rattle Blocks (P - I - P - ★) -->
+                <div
+                  id="obj-blocks"
+                  class="attic-object attic-blocks"
+                  role="group"
+                  aria-label="Playable Chime Blocks"
+                >
+                  <button type="button" class="rattle-cube" data-note="0">P</button>
+                  <button type="button" class="rattle-cube" data-note="1">I</button>
+                  <button type="button" class="rattle-cube" data-note="2">P</button>
+                  <button type="button" class="rattle-cube" data-note="3">★</button>
+                </div>
+
+                <!-- Relic 5: Ribbon Dress-Up Bench -->
+                <div
+                  id="obj-ribbon"
+                  class="attic-object attic-bench"
+                  role="button"
+                  tabindex="0"
+                  title="Pip's Ribbon Bow Customizer"
+                >
+                  <span class="ribbon-emoji">🎀</span>
+                  <span class="relic-label-pill">5. Silk Bow</span>
+                </div>
+
+                <div class="cursor-spotlight" aria-hidden="true"></div>
+                <div id="attic-notes-fx" class="attic-notes-fx" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Relic Inspector & Controls -->
+          <div class="action-pane">
+            <div>
+              <div class="quest-tracker">
+                <span class="quest-label">Discovered: <span id="relics-count">1</span>/5 Relics</span>
+                <div class="tracker-pills" aria-hidden="true">
+                  <div class="tracker-dot found" id="dot-0"></div>
+                  <div class="tracker-dot" id="dot-1"></div>
+                  <div class="tracker-dot" id="dot-2"></div>
+                  <div class="tracker-dot" id="dot-3"></div>
+                  <div class="tracker-dot" id="dot-4"></div>
+                </div>
+              </div>
+
+              <div id="attic-detail-card">
+                <div id="relic-subtitle" class="pane-eyebrow">Relic #1 • Lullaby Lab</div>
+                <h2 id="relic-title" class="pane-heading">The Golden Music Box</h2>
+                <p id="relic-desc" class="pane-subtext">
+                  Wind the brass clockwork key to weave harmonious silver lullabies for tired little cherubs.
+                </p>
+
+                <!-- Ribbon Swatches (Visible when Relic #5 is active) -->
+                <div id="ribbon-picker-wrap" class="ribbon-picker-box" style="display: none;">
+                  <div class="ribbon-picker-title">Choose Starlight Silk Hue:</div>
+                  <div class="ribbon-swatches">
+                    <button type="button" class="swatch-btn active" data-color="#f4978e" style="background: #f4978e;" title="Rosy Velvet"></button>
+                    <button type="button" class="swatch-btn" data-color="#ffd166" style="background: #ffd166;" title="Starlight Gold"></button>
+                    <button type="button" class="swatch-btn" data-color="#a8dadc" style="background: #a8dadc;" title="Mint Dewdrop"></button>
+                    <button type="button" class="swatch-btn" data-color="#b8b0e4" style="background: #b8b0e4;" title="Midnight Lavender"></button>
+                    <button type="button" class="swatch-btn" data-color="#ffffff" style="background: #ffffff;" title="Pearl Cloud"></button>
+                  </div>
+                </div>
+
+                <div class="action-stack">
+                  <button id="btn-relic-action" class="cozy-btn btn-cookie" type="button">
+                    <span id="relic-btn-icon">🎵</span>
+                    <span id="relic-btn-text">Wind the Clockwork Key</span>
+                  </button>
+                  <button id="btn-attic-light" class="cozy-btn btn-attic-jump" type="button">
+                    <span>🏮</span>
+                    <span id="attic-light-label">Toggle Warm Lantern Glow</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="pane-footer-hint">
+              ✨ <i>Move cursor to tilt the 2.5D diorama. Tap all 5 relics to unlock their chimes.</i>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 3: 2-PAGE POP-UP STORYBOOK SPREAD
+           =================================================================== -->
+      <section id="view-storybook" class="tab-view" aria-label="Pop-Up Storybook">
+        <div id="storybook-spread" class="storybook-spread">
+          <!-- Satin Ribbon Bookmark -->
+          <div class="story-ribbon-bookmark" aria-hidden="true"></div>
+
+          <!-- Center Book Spine Shadow -->
+          <div class="book-spine" aria-hidden="true"></div>
+
+          <!-- Left Page: 2.5D Pop-Up Illustration Plate -->
+          <div class="book-page book-page-left">
+            <div class="plate-frame">
+              <img
+                id="story-plate-img"
+                class="story-plate-img"
+                src="assets/pip_avatar_cloud.png"
+                alt="Storybook chapter illustration"
+              />
+              <div id="story-plate-caption" class="story-plate-caption">
+                Plate I • The Ivory Cherub Upon the Velvet Cloud
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Page: Illuminated Verse & Chapter Navigation -->
+          <div class="book-page book-page-right">
+            <div>
+              <div class="book-top-bar">
+                <span id="story-page-indicator" class="book-page-num">Page 1 of 5</span>
+              </div>
+
+              <h2 id="story-chapter-title" class="book-chapter-title">
+                Of Bone Most Bright &amp; Slumber Soft
+              </h2>
+
+              <div class="book-verse-wrap">
+                <span id="story-dropcap" class="book-dropcap">H</span>
+                <div id="story-body" class="book-poem-body">
+                  ark! Softly tread where velvet clouds do rock,<br />
+                  Nor wake the tiniest watchman of the clock.<br />
+                  Behold young Pip: no spectre grim nor cold,<br />
+                  But ivory cherub cast in gentlest mold!
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div id="story-extra-action" style="display: none; margin-bottom: 12px;">
+                <button id="story-lantern-btn" class="cozy-btn btn-cookie" type="button">
+                  <span>🏮</span>
+                  <span>Light the Great Dawn Lantern</span>
+                </button>
+              </div>
+
+              <div class="book-nav-row">
+                <button id="story-prev-btn" class="pill-btn book-nav-btn" type="button">
+                  ‹ Prev Page
+                </button>
+                <div class="chapter-dots" role="tablist" aria-label="Storybook Chapters">
+                  <button type="button" class="chapter-dot active" data-chapter="0" aria-label="Chapter 1"></button>
+                  <button type="button" class="chapter-dot" data-chapter="1" aria-label="Chapter 2"></button>
+                  <button type="button" class="chapter-dot" data-chapter="2" aria-label="Chapter 3"></button>
+                  <button type="button" class="chapter-dot" data-chapter="3" aria-label="Chapter 4"></button>
+                  <button type="button" class="chapter-dot" data-chapter="4" aria-label="Chapter 5"></button>
+                </div>
+                <button id="story-next-btn" class="pill-btn active book-nav-btn" type="button">
+                  Next Page ›
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 4: STARRY DELIVERY FLIGHT (60FPS CANVAS MINI-GAME)
+           =================================================================== -->
+      <section id="view-delivery" class="tab-view" aria-label="Starry Delivery Mini-Game">
+        <div class="game-container">
+          <div class="game-hud">
+            <div class="hud-stat">Stardust: <span id="game-score">0</span></div>
+            <div class="hud-stat">Hearts: <span id="game-hearts">❤️❤️❤️</span></div>
+            <div class="hud-stat">High Score: <span id="game-highscore">0</span></div>
+            <button id="game-start-btn" class="pill-btn active" type="button">
+              Take Flight 🚀
+            </button>
+          </div>
+          <div class="canvas-frame">
+            <canvas id="game-canvas"></canvas>
+
+            <!-- 500 Score Easter Egg Mystery Modal & Blur Backdrop -->
+            <div id="game-easter-egg-overlay" class="game-egg-overlay" style="display: none;" role="dialog" aria-modal="true" aria-label="500 Stardust Easter Egg">
+              <div class="egg-backdrop-blur"></div>
+
+              <!-- Phase 1: The Floating Pulsing Golden Easter Egg -->
+              <div id="easter-egg-pod" class="easter-egg-pod">
+                <div class="egg-banner-tag">✦ 500 STARDUST MILESTONE! ✦</div>
+                <div id="easter-egg-element" class="celestial-egg" role="button" tabindex="0" title="Click to hatch Little Pip's Easter Egg!">
+                  <div class="egg-halo"></div>
+                  <div class="egg-shell">
+                    <div class="egg-star-icon">⭐</div>
+                    <div class="egg-ribbon-icon">🎀</div>
+                    <div class="egg-crack-overlay" id="egg-crack-overlay"></div>
+                  </div>
+                  <div class="egg-sparkle-trail"></div>
+                </div>
+                <div class="egg-prompt-wrap">
+                  <div class="egg-prompt-pill">🐣 CLICK ME! 🐣</div>
+                  <div class="egg-prompt-sub">Tap the celestial egg to reveal Little Pip's nocturnal surprise! ✨</div>
+                </div>
+              </div>
+
+              <!-- Phase 2: The Burst Reward Parchment Card -->
+              <div id="easter-reward-card" class="easter-reward-card" style="display: none;">
+                <button id="btn-egg-close" class="egg-close-btn" type="button" aria-label="Close Easter Egg" title="Close">✕</button>
+
+                <div class="reward-card-header">
+                  <div class="reward-seal-badge">🌟</div>
+                  <div class="reward-header-text">
+                    <div class="reward-eyebrow">Milestone Reached • Score 500+</div>
+                    <h3 class="reward-title">Congratulations, Midnight Courier!</h3>
+                  </div>
+                </div>
+
+                <div class="reward-rank-banner">
+                  <span class="rank-crown">👑</span>
+                  <div>
+                    <div class="rank-subtitle">Official Bedtime Commission Awarded:</div>
+                    <div class="rank-title">HONORARY CHIEF ARCHITECT OF SLUMBER</div>
+                    <div class="rank-role">&amp; Master Weaver of the Starry Hall</div>
+                  </div>
+                </div>
+
+                <div class="reward-lore-box">
+                  <div class="pip-duties-grid">
+                    <div class="duty-pill">
+                      <span class="duty-icon">🌙</span>
+                      <div class="duty-info">
+                        <strong>Weaving Sweet Dreams</strong>
+                        <span>Blueprint peaceful slumbers with Pip's brass wrench.</span>
+                      </div>
+                    </div>
+                    <div class="duty-pill">
+                      <span class="duty-icon">🏮</span>
+                      <div class="duty-info">
+                        <strong>Guarding Dream Lanterns</strong>
+                        <span>Warm golden gleams that banish all nightmares.</span>
+                      </div>
+                    </div>
+                    <div class="duty-pill">
+                      <span class="duty-icon">🎵</span>
+                      <div class="duty-info">
+                        <strong>Attic Lullaby Weaver</strong>
+                        <span>Clockwork music boxes weaving silver rest.</span>
+                      </div>
+                    </div>
+                    <div class="duty-pill">
+                      <span class="duty-icon">🍪</span>
+                      <div class="duty-info">
+                        <strong>Vanilla Cookie Baker</strong>
+                        <span>Baking sweet stardust cookies for weary cherubs.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="reward-perks-row">
+                  <div class="perk-badge">🍪 <b>+5</b> Star-Cookies</div>
+                  <div class="perk-badge">❤️ <b>+1</b> Golden Heart</div>
+                  <div class="perk-badge">⭐ <b>+200</b> Stardust Bonus</div>
+                  <div class="perk-badge">👑 <b>Pip's Halo</b> Unlocked</div>
+                </div>
+
+                <div class="reward-actions-row">
+                  <button id="btn-egg-resume" class="cozy-btn btn-cookie reward-btn-primary" type="button" title="Claim rewards & resume current flight">
+                    <span>🚀</span>
+                    <span>Resume Flight</span>
+                  </button>
+                  <button id="btn-egg-restart" class="cozy-btn btn-cookie" type="button" title="Start a fresh game with 0 score and 3 hearts">
+                    <span>↺</span>
+                    <span>Restart Game</span>
+                  </button>
+                  <button id="btn-egg-to-nursery" class="cozy-btn btn-attic-jump" type="button" title="Visit Pip in the nursery">
+                    <span>🍼</span>
+                    <span>Visit Pip</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 5: CELESTIAL GUESTBOOK & SLUMBER ODOMETER
+           =================================================================== -->
+      <section id="view-guestbook" class="tab-view" aria-label="Celestial Guestbook">
+        <div class="guestbook-grid">
+          <!-- Left Form & Slumber Odometer Card -->
+          <div class="guestbook-form-card">
+            <div class="odometer-card">
+              <div class="odometer-eyebrow">Odometer of Slumber</div>
+              <div id="slumber-odometer" class="odometer-val">0 0 1 , 4 8 2</div>
+              <div class="odometer-sub">Dreams Safely Delivered Tonight</div>
+            </div>
+
+            <div>
+              <h2 class="guestbook-heading">Leave a Dream Wish</h2>
+              <p class="guestbook-sub">
+                Inscribe your nocturnal wish upon Pip's nursery parchment.
+              </p>
+            </div>
+
+            <form id="wish-form" class="wish-form">
+              <input
+                id="wish-author"
+                class="form-input"
+                type="text"
+                placeholder="Your Name or Starlight Title"
+                required
+                maxlength="32"
+              />
+              <textarea
+                id="wish-content"
+                class="form-input"
+                rows="3"
+                placeholder="What gentle dream shall Pip weave for you tonight?"
+                required
+                maxlength="160"
+              ></textarea>
+              <button type="submit" id="btn-send-wish" class="cozy-btn btn-wish-submit">
+                <span>✨</span>
+                <span>Send Wish to the Stars</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Right Scrollable Wishes Feed -->
+          <div class="guestbook-feed-card">
+            <div class="feed-header">
+              <h3 class="guestbook-heading">Nocturnal Dream Wall</h3>
+              <span id="wishes-count-badge" class="wishes-badge">4 wishes</span>
+            </div>
+            <div id="wishes-feed" class="wishes-scroll-feed" data-lenis-prevent>
+              <!-- Populated dynamically by src/main.ts -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Sticky Pill Bottom Dock (5 Tabs, Zero Overlap) -->
+    <nav class="bottom-dock" aria-label="Nursery Navigation Dock">
+      <a id="dock-nursery" class="dock-item active" href="#nursery" data-tab="nursery">
+        <span class="dock-icon">🌙</span>
+        <span>nursery</span>
+      </a>
+      <a id="dock-attic" class="dock-item" href="#attic" data-tab="attic">
+        <span class="dock-icon">🎨</span>
+        <span>workshop</span>
+      </a>
+      <a id="dock-storybook" class="dock-item" href="#storybook" data-tab="storybook">
+        <span class="dock-icon">📖</span>
+        <span>storybook</span>
+      </a>
+      <a id="dock-delivery" class="dock-item" href="#delivery" data-tab="delivery">
+        <span class="dock-icon">⭐</span>
+        <span>play route</span>
+      </a>
+      <a id="dock-guestbook" class="dock-item" href="#guestbook" data-tab="guestbook">
+        <span class="dock-icon">💌</span>
+        <span>guestbook</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- Master TypeScript Entry -->
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

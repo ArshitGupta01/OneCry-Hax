@@ -1,0 +1,9 @@
+﻿node_modules
+dist
+.env
+.env.local
+*.mp4
+preview_captures
+*.py
+links.txt
+suggestions.txt
